@@ -93,20 +93,20 @@ GET /api/logs?cep=01001000&inicio=2025-08-01&fim=2025-08-05
 
 ![estrutura-camadas](estrutura-camadas.png)
 
-> 📌 Coloque a imagem `estrutura-camadas.png` na raiz do projeto para ser renderizada corretamente no GitHub.
+
 
 ---
 
 ## 📌 Organização em Camadas
 
 * `Controller`: expõe os endpoints REST
-* `UseCase`: orquestra os fluxos (command pattern)
+* `UseCase`: orquestra os fluxos (Command Pattern)
 * `Service`: implementa regras de negócio e integra com API externa
 * `Repository`: acesso ao banco de dados com JPA
 
 ---
 
-## 📂 Estrutura esperada da resposta da API externa (exemplo WireMock)
+## 📂 Exemplo de resposta da API externa (WireMock)
 
 `GET http://wiremock:8080/ws/01001000/json`
 
