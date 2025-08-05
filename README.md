@@ -1,120 +1,157 @@
-Consulta de CEP com Logs
-Esse projeto é uma API simples feita em Java com Spring Boot que permite consultar informações de um CEP através de uma API externa (mockada com WireMock) e registrar as consultas realizadas no banco de dados.
+# Consulta de CEP com Logs
 
-A ideia aqui foi simular um cenário real de uso de APIs externas e persistência de dados, usando princípios de arquitetura limpa, SOLID e boas práticas de desenvolvimento.
+Este projeto é uma API simples desenvolvida em **Java 17 com Spring Boot 3** que permite consultar informações de um CEP através de uma API externa (mockada com **WireMock**) e registrar as consultas realizadas no banco de dados **PostgreSQL**.
 
-O que essa aplicação faz
-Permite buscar um CEP (formato 8 dígitos, sem traço)
+A ideia é simular um cenário real de uso com:
 
-Faz a consulta numa API externa mockada com WireMock
+* Integração com serviços externos (API de CEP)
+* Registro e rastreabilidade de consultas
+* Boas práticas como SOLID, arquitetura limpa e padrões de projeto (Command)
+* Camadas bem definidas (Controller, UseCase, Service, Repository)
 
-Salva no banco de dados a consulta realizada, junto com o horário
+---
 
-Os dados retornados da API
+## ✅ O que essa aplicação faz
 
-Expõe também um endpoint para consultar os logs das buscas, com filtros opcionais por CEP e por intervalo de datas
+* Permite buscar um CEP (formato 8 dígitos, sem traço)
+* Consulta uma API externa (mockada com WireMock)
+* Salva no banco de dados:
 
-Como rodar:
-- Pré-requisitos
-- Docker e Docker Compose instalados
+  * O horário da consulta
+  * Os dados retornados da API
+* Expõe também um endpoint para consultar os logs das buscas
 
-Subir o projeto:
-- comando
+  * Com filtros opcionais por **CEP** e por **intervalo de datas**
+
+---
+
+## 🚀 Como rodar o projeto
+
+### Pré-requisitos
+
+* Docker e Docker Compose instalados
+
+### Subir a aplicação:
+
+```bash
 docker-compose up --build
+```
 
+Isso irá subir **3 containers**:
 
-A aplicação irá subir 3 containers:
+* `cep_app`: aplicação Spring Boot
+* `postgres`: banco de dados PostgreSQL
+* `wiremock`: mock da API de CEP
 
-cep_app: a aplicação Spring Boot
+---
 
-cep_postgres: banco PostgreSQL
+## 🔗 Endpoints disponíveis
 
-cep_wiremock: mock da API externa de CEP
+### 📍 Buscar CEP
 
-Endpoints disponíveis:
-Buscar CEP
+`GET /api/cep/{cep}`
+
 Exemplo:
+
+```
 GET /api/cep/01001000
+```
 
-Consultar logs
-GET /api/logs
+### 📄 Consultar Logs
 
-Parâmetros opcionais:
-cep: filtra por CEP exato
-inicio: data de início (formato YYYY-MM-DD)
-fim: data de fim (formato YYYY-MM-DD)
+`GET /api/logs`
 
-Exemplos:
+#### Parâmetros opcionais:
+
+* `cep` → filtra por CEP exato
+* `inicio` → data inicial (formato `YYYY-MM-DD`)
+* `fim` → data final (formato `YYYY-MM-DD`)
+
+#### Exemplos:
+
+```
 GET /api/logs
 GET /api/logs?cep=01001000
 GET /api/logs?inicio=2025-08-01&fim=2025-08-05
 GET /api/logs?cep=01001000&inicio=2025-08-01&fim=2025-08-05
+```
 
-Tecnologias usadas:
-Java 17
-Spring Boot 3
-PostgreSQL
-WireMock
-Docker e Docker Compose
+---
 
-     
+## 🛠 Tecnologias Utilizadas
 
-Camadas Internas da Aplicação
+* Java 17
+* Spring Boot 3
+* PostgreSQL
+* Docker e Docker Compose
+* WireMock
+* JPA/Hibernate
 
-[ Controller ]         --> expõe os endpoints REST ->
-     
-[ UseCase / Command ]  --> orquestra as regras e uso dos serviços ->
-    
-[ Service ]            --> lida com regras de negócio, chamada à API externa ->
-    
-[ Repository ]         --> grava e consulta dados no banco de dados ->
+---
 
+## 🧱 Estrutura de Camadas da Aplicação
 
+```mermaid
+flowchart TD
+    A[Usuário (cliente)] -->|HTTP GET /api/cep/{cep}| B[CepController]
+    B --> C[BuscarCepUseCase]
+    C --> D[BuscarCepCommand]
+    D --> E[CepServiceImpl]
+    E -->|Chamada HTTP| F[API Externa - WireMock]
+    E -->|Grava log| G[ConsultaLogRepository]
+    G -->|Persistência| H[(PostgreSQL)]
 
+    subgraph "Consulta de Logs"
+        I[Usuário (cliente)] -->|GET /api/logs| J[ConsultaLogController]
+        J --> K[LogServiceImpl]
+        K --> L[ConsultaLogRepository]
+        L --> H
+    end
+```
 
+---
 
+## 📌 Organização em Camadas
 
-Fluxo de Consulta de CEP:
+* `Controller`: expõe os endpoints REST
+* `UseCase`: orquestra os fluxos (command pattern)
+* `Service`: implementa regras de negócio e integra com API externa
+* `Repository`: acesso ao banco de dados com JPA
 
-Usuário chama: /api/cep/{cep} ->
-    
-CepController ->
-        
-        
-BuscarCepUseCase (usa Command Pattern) ->
-        
-CepServiceImpl->
-        
-        
-Chama API ViaCEP (mockada com Wiremock/Mockoon) ->
-        
-      
-Recebe resposta e grava log da consulta no banco ->
-        
-        
-Retorna DTO com os dados do CEP ->
+---
 
+## 📂 Estrutura esperada da resposta da API externa (exemplo WireMock)
 
+`GET http://wiremock:8080/ws/01001000/json`
 
-Fluxo de Consulta de Logs:
+```json
+{
+  "cep": "01001-000",
+  "logradouro": "Praça da Sé",
+  "bairro": "Sé",
+  "localidade": "São Paulo",
+  "uf": "SP"
+}
+```
 
+---
 
-Usuário chama: /api/logs?cep=XXXX&inicio=YYYY-MM-DD&fim=YYYY-MM-DD ->
+## 🧪 Testes
 
-        
-ConsultaLogController ->
-        
-        
-LogServiceImpl ->
-        
-        
-ConsultaLogRepository → consulta o banco e retorna os logs
+O projeto possui testes unitários para:
 
+* Controllers (MockMvc)
+* Serviços (Mockito)
+* UseCases e comandos
 
+Execute com:
 
+```bash
+./mvnw test
+```
 
+---
 
+## 📬 Contato
 
-
-
-
+Douglas Hermann – [LinkedIn](https://www.linkedin.com/in/douglas-hermann-de-araujo/)
