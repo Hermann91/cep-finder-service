@@ -91,23 +91,9 @@ GET /api/logs?cep=01001000&inicio=2025-08-01&fim=2025-08-05
 
 ## 🧱 Estrutura de Camadas da Aplicação
 
-```mermaid
-flowchart TD
-    A[Usuário (cliente)] -->|HTTP GET /api/cep/{cep}| B[CepController]
-    B --> C[BuscarCepUseCase]
-    C --> D[BuscarCepCommand]
-    D --> E[CepServiceImpl]
-    E -->|Chamada HTTP| F[API Externa - WireMock]
-    E -->|Grava log| G[ConsultaLogRepository]
-    G -->|Persistência| H[(PostgreSQL)]
+![estrutura-camadas](estrutura-camadas.png)
 
-    subgraph "Consulta de Logs"
-        I[Usuário (cliente)] -->|GET /api/logs| J[ConsultaLogController]
-        J --> K[LogServiceImpl]
-        K --> L[ConsultaLogRepository]
-        L --> H
-    end
-```
+> 📌 Coloque a imagem `estrutura-camadas.png` na raiz do projeto para ser renderizada corretamente no GitHub.
 
 ---
 
