@@ -45,6 +45,13 @@ Isso irá subir **3 containers**:
 
 ---
 
+## 📘 Documentação da API
+
+Você pode acessar a documentação e testar os endpoints via Swagger:
+
+[🔗 Swagger UI](http://localhost:8080/swagger-ui/index.html)
+
+
 ## 🔗 Endpoints disponíveis
 
 ### 📍 Buscar CEP
