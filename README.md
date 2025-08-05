@@ -56,3 +56,90 @@ Spring Boot 3
 PostgreSQL
 WireMock
 Docker e Docker Compose
+
+
+
+Arquitetura Geral da Solução
+
+┌────────────────────────────────────────────────────┐
+│                 Usuário/Frontend                   │
+└────────────────────────────────────────────────────┘
+                          │
+                          ▼
+            ┌────────────────────────────┐
+            │  API Spring Boot (Backend) │
+            │  - Consulta CEP            │
+            │  - Logs de Consulta        │
+            └────────────────────────────┘
+               │                    │
+               ▼                    ▼
+     ┌────────────────┐     ┌─────────────────────┐
+     │ API de CEP     │     │ Banco de Dados (DB) │
+     │ ViaCEP (Mock)  │     │ PostgreSQL (Docker) │
+     └────────────────┘     └─────────────────────┘
+     
+
+Camadas Internas da Aplicação
+
+[ Controller ]         --> expõe os endpoints REST
+      │
+      ▼
+[ UseCase / Command ]  --> orquestra as regras e uso dos serviços
+      │
+      ▼
+[ Service ]            --> lida com regras de negócio, chamada à API externa
+      │
+      ▼
+[ Repository ]         --> grava e consulta dados no banco de dados
+
+
+
+
+
+
+Fluxo de Consulta de CEP
+
+Usuário chama: /api/cep/{cep}
+        │
+        ▼
+CepController
+        │
+        ▼
+BuscarCepUseCase (usa Command Pattern)
+        │
+        ▼
+CepServiceImpl
+        │
+        ▼
+Chama API ViaCEP (mockada com Wiremock/Mockoon)
+        │
+        ▼
+Recebe resposta e grava log da consulta no banco
+        │
+        ▼
+Retorna DTO com os dados do CEP
+
+
+
+Fluxo de Consulta de Logs
+
+
+Usuário chama: /api/logs?cep=XXXX&inicio=YYYY-MM-DD&fim=YYYY-MM-DD
+        │
+        ▼
+ConsultaLogController
+        │
+        ▼
+LogServiceImpl
+        │
+        ▼
+ConsultaLogRepository → consulta o banco e retorna os logs
+
+
+
+
+
+
+
+
+
