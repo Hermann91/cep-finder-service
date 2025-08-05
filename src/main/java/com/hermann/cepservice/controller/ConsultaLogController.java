@@ -1,42 +1,30 @@
 package com.hermann.cepservice.controller;
 
 import com.hermann.cepservice.entity.ConsultaLog;
-import com.hermann.cepservice.repository.ConsultaLogRepository;
+import com.hermann.cepservice.service.LogService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/logs")
 public class ConsultaLogController {
 
-    private final ConsultaLogRepository logRepository;
+    private final LogService logService;
 
-    public ConsultaLogController(ConsultaLogRepository logRepository) {
-        this.logRepository = logRepository;
+    public ConsultaLogController(LogService logService) {
+        this.logService = logService;
     }
 
     @GetMapping
-    public ResponseEntity<List<ConsultaLog>> listarLogs(
+    public ResponseEntity<List<ConsultaLog>> buscarLogs(
             @RequestParam(required = false) String cep,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim
     ) {
-        List<ConsultaLog> logs;
-
-        if (cep != null && inicio != null && fim != null) {
-            logs = logRepository.findByCepAndDataConsultaBetween(cep, inicio, fim);
-        } else if (cep != null) {
-            logs = logRepository.findByCep(cep);
-        } else if (inicio != null && fim != null) {
-            logs = logRepository.findByDataConsultaBetween(inicio, fim);
-        } else {
-            logs = logRepository.findAll();
-        }
-
-        return ResponseEntity.ok(logs);
+        return ResponseEntity.ok(logService.buscarLogs(cep, inicio, fim));
     }
 }
