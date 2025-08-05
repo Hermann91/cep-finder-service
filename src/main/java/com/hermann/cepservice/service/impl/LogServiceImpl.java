@@ -1,6 +1,8 @@
 package com.hermann.cepservice.service.impl;
 
 import com.hermann.cepservice.entity.ConsultaLog;
+import com.hermann.cepservice.exceptions.InvalidCepFormatException;
+import com.hermann.cepservice.exceptions.InvalidDateRangeException;
 import com.hermann.cepservice.repository.ConsultaLogRepository;
 import com.hermann.cepservice.service.LogService;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,14 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public List<ConsultaLog> buscarLogs(String cep, LocalDate inicio, LocalDate fim) {
+        if (cep != null && !cep.matches("\\d{8}")) {
+            throw new InvalidCepFormatException(cep);
+        }
+
+        if (inicio != null && fim != null && inicio.isAfter(fim)) {
+            throw new InvalidDateRangeException();
+        }
+
         LocalDateTime inicioDateTime = inicio != null ? inicio.atStartOfDay() : null;
         LocalDateTime fimDateTime = fim != null ? fim.atTime(LocalTime.MAX) : null;
 
@@ -34,4 +44,6 @@ public class LogServiceImpl implements LogService {
             return logRepository.findAll();
         }
     }
+
+
 }

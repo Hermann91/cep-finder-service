@@ -19,7 +19,7 @@ public class SwaggerConfig {
                         .description("API para consulta de CEP e registro de logs de acesso.")
                         .contact(new Contact()
                                 .name("Douglas Hermann")
-                                .email("seu-email@exemplo.com")
+                                .email("00000@email.com")
                                 .url("https://www.linkedin.com/in/douglas-hermann-de-araujo/")
                         )
                 );
