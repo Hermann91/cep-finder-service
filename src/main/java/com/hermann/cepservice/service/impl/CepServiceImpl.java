@@ -21,7 +21,7 @@ public class CepServiceImpl implements CepService {
     private final ObjectMapper objectMapper;
 
     @Value("${cep.api.url}")
-    private String cepApiUrl;
+    public String cepApiUrl;
 
     public CepServiceImpl(RestTemplate restTemplate,
                           ConsultaLogRepository logRepository,
