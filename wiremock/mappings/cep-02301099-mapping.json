@@ -1,11 +1,11 @@
 {
   "request": {
     "method": "GET",
-    "url": "/ws/01001000/json"
+    "url": "/ws/02301099/json"
   },
   "response": {
     "status": 200,
-    "bodyFileName": "01001000-response.json",
+    "bodyFileName": "02301099-response.json",
     "headers": {
       "Content-Type": "application/json"
     }
