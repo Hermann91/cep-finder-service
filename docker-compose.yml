@@ -9,10 +9,14 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
+      - wiremock
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cepdb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+      CEP_API_URL: http://cep_wiremock:8080/ws
+    networks:
+      - cep_net
 
   postgres:
     image: postgres:15
@@ -25,6 +29,21 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - cep_net
+
+  wiremock:
+    image: wiremock/wiremock:3.3.1
+    container_name: cep_wiremock
+    ports:
+      - "8089:8080"
+    volumes:
+      - ./wiremock:/home/wiremock
+    networks:
+      - cep_net
 
 volumes:
   pgdata:
+
+networks:
+  cep_net:
