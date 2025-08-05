@@ -6,10 +6,12 @@ import com.hermann.cepservice.entity.ConsultaLog;
 import com.hermann.cepservice.exceptions.CepNotFoundException;
 import com.hermann.cepservice.repository.ConsultaLogRepository;
 import com.hermann.cepservice.service.CepService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
 
 import java.time.LocalDateTime;
 
@@ -32,6 +34,7 @@ public class CepServiceImpl implements CepService {
     }
 
     @Override
+    @CircuitBreaker(name = "cepApi", fallbackMethod = "fallbackBuscarCep")
     public CepResponseDTO buscarCep(String cep) {
         String url = cepApiUrl + "/" + cep + "/json";
         CepResponseDTO response;

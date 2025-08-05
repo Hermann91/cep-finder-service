@@ -1,44 +1,30 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:14
-    container_name: cep_postgres
-    environment:
-      POSTGRES_DB: cep_db
-      POSTGRES_USER: cep_user
-      POSTGRES_PASSWORD: cep_pass
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - cep_net
-
-  wiremock:
-    image: wiremock/wiremock:3.3.1
-    container_name: cep_wiremock
-    ports:
-      - "8089:8080"
-    volumes:
-      - ./wiremock:/home/wiremock
-    networks:
-      - cep_net
-
-  app:
-    build: .
-    container_name: cep_app
-    depends_on:
-      - postgres
+  cep_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      - postgres
     environment:
-      SPRING_PROFILES_ACTIVE: default
-    networks:
-      - cep_net
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cepdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: cepdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
   pgdata:
-
-networks:
-  cep_net:
