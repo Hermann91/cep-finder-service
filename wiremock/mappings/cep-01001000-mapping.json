@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/ws/01001000/json"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "01001000-response.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
